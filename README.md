@@ -20,12 +20,6 @@
 - Python 3.6 或更高版本
 - Pillow 库 (9.0.0 或更高版本)
 
-## 安装项目依赖库
-
-```bash
-pip install -r requirements.txt
-```
-
 ## 项目结构
 
 ```
