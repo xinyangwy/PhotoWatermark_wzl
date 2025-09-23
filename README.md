@@ -26,6 +26,20 @@
 pip install -r requirements.txt
 ```
 
+## 项目结构
+
+```
+PhotoWatermark_wzl/
+├── photo_watermark.py  # 主程序文件
+├── test_image.py       # 测试脚本，用于生成测试图片
+├── requirements.txt    # 项目依赖
+├── README.md           # 项目文档
+├── LICENSE             # 许可证文件
+└── images/             # 示例图片目录
+    ├── [示例图片文件]
+    └── images_watermark/  # 处理后的示例图片目录
+```
+
 ## 使用方法
 
 ### 基本用法
@@ -80,20 +94,3 @@ python test_image.py
 
 
 
-## 项目结构
-
-```
-PhotoWatermark_wzl/
-├── photo_watermark.py  # 主程序文件
-├── test_image.py       # 测试脚本，用于生成测试图片
-├── requirements.txt    # 项目依赖
-├── README.md           # 项目文档
-├── LICENSE             # 许可证文件
-└── images/             # 示例图片目录
-    ├── [示例图片文件]
-    └── images_watermark/  # 处理后的示例图片目录
-```
-
-## 许可证
-
-本项目采用MIT许可证 - 详见[LICENSE](LICENSE)文件。
