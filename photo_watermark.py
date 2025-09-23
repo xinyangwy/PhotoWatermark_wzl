@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Photo Watermark Tool
-This script adds a watermark to photos based on their EXIF date information.
+照片水印工具
+此脚本根据照片的EXIF日期信息为照片添加水印。
 """
 
 import os
@@ -13,49 +13,49 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 class PhotoWatermark:
-    """Photo watermark processor class"""
+    """照片水印处理器类"""
     
     def __init__(self, font_size=36, font_color=(255, 255, 255, 128), position="right_bottom"):
         """
-        Initialize the watermark processor
+        初始化水印处理器
         
-        Args:
-            font_size (int): Size of the watermark font
-            font_color (tuple): RGBA color of the watermark text
-            position (str): Position of the watermark on the image
-                            (left_top, center, right_bottom, etc.)
+        参数:
+            font_size (int): 水印字体大小
+            font_color (tuple): 水印文本的RGBA颜色
+            position (str): 水印在图像上的位置
+                            (left_top, center, right_bottom等)
         """
         self.font_size = font_size
         self.font_color = font_color
         self.position = position
         
-        # Try to find a suitable font
+        # 尝试找到合适的字体
         try:
-            # Try to use a system font
+            # 尝试使用系统字体
             if os.name == 'nt':  # Windows
                 self.font = ImageFont.truetype("arial.ttf", self.font_size)
             else:  # Linux/Mac
                 self.font = ImageFont.truetype("DejaVuSans.ttf", self.font_size)
         except IOError:
-            # Fallback to default font
+            # 回退到默认字体
             self.font = ImageFont.load_default()
     
     def get_exif_date(self, image_path):
         """
-        Extract the date from image EXIF data
+        从图像EXIF数据中提取日期
         
-        Args:
-            image_path (str): Path to the image file
+        参数:
+            image_path (str): 图像文件路径
             
-        Returns:
-            str: Date string in YYYY-MM-DD format
+        返回:
+            str: YYYY-MM-DD格式的日期字符串
         """
         try:
             with Image.open(image_path) as img:
                 exif_data = img._getexif()
                 
                 if exif_data:
-                    # Find the date tag in EXIF data
+                    # 在EXIF数据中查找日期标签
                     date_time = None
                     for tag, tag_value in ExifTags.TAGS.items():
                         if tag_value == 'DateTimeOriginal':
@@ -64,36 +64,36 @@ class PhotoWatermark:
                                 break
                     
                     if date_time:
-                        # Parse the date (format: YYYY:MM:DD HH:MM:SS)
+                        # 解析日期（格式：YYYY:MM:DD HH:MM:SS）
                         try:
                             dt = datetime.strptime(date_time, "%Y:%m:%d %H:%M:%S")
                             return dt.strftime("%Y-%m-%d")
                         except ValueError:
                             pass
                 
-                # Fallback to current date if EXIF not available
+                # 如果EXIF不可用，回退到当前日期
                 current_date = datetime.now().strftime("%Y-%m-%d")
-                print(f"No EXIF date found for {image_path}, using current date: {current_date}")
+                print(f"未找到{image_path}的EXIF日期，使用当前日期：{current_date}")
                 return current_date
         except Exception as e:
-            print(f"Error reading EXIF data: {e}")
-            # Fallback to current date on error
+            print(f"读取EXIF数据时出错：{e}")
+            # 出错时回退到当前日期
             return datetime.now().strftime("%Y-%m-%d")
     
     def calculate_position(self, img_width, img_height, text_width, text_height):
         """
-        Calculate the position of the watermark text
+        计算水印文本的位置
         
-        Args:
-            img_width (int): Width of the image
-            img_height (int): Height of the image
-            text_width (int): Width of the watermark text
-            text_height (int): Height of the watermark text
+        参数:
+            img_width (int): 图像宽度
+            img_height (int): 图像高度
+            text_width (int): 水印文本宽度
+            text_height (int): 水印文本高度
             
-        Returns:
-            tuple: (x, y) coordinates for the watermark
+        返回:
+            tuple: 水印的(x, y)坐标
         """
-        padding = 20  # Padding from the edge
+        padding = 20  # 边缘填充
         
         if self.position == "left_top":
             return (padding, padding)
@@ -114,83 +114,83 @@ class PhotoWatermark:
         elif self.position == "right_bottom":
             return (img_width - text_width - padding, img_height - text_height - padding)
         else:
-            # Default to right bottom
+            # 默认为右下角
             return (img_width - text_width - padding, img_height - text_height - padding)
     
     def add_watermark(self, image_path, output_path):
         """
-        Add watermark to an image and save it
+        为图像添加水印并保存
         
-        Args:
-            image_path (str): Path to the source image
-            output_path (str): Path to save the watermarked image
+        参数:
+            image_path (str): 源图像路径
+            output_path (str): 保存水印图像的路径
             
-        Returns:
-            bool: True if successful, False otherwise
+        返回:
+            bool: 成功返回True，否则返回False
         """
         try:
-            # Get the date from EXIF or use current date
+            # 从EXIF获取日期或使用当前日期
             date_text = self.get_exif_date(image_path)
             
-            # Open the image
+            # 打开图像
             with Image.open(image_path) as img:
-                # Create a copy to draw on
+                # 创建副本用于绘制
                 watermarked = img.copy()
                 draw = ImageDraw.Draw(watermarked)
                 
-                # Calculate text size
+                # 计算文本大小
                 try:
-                    # For newer Pillow versions
+                    # 对于较新的Pillow版本
                     text_bbox = draw.textbbox((0, 0), date_text, font=self.font)
                     text_width = text_bbox[2] - text_bbox[0]
                     text_height = text_bbox[3] - text_bbox[1]
                 except AttributeError:
-                    # For older Pillow versions
+                    # 对于较旧的Pillow版本
                     text_width, text_height = draw.textsize(date_text, font=self.font)
                 
-                # Calculate position
+                # 计算位置
                 position = self.calculate_position(
                     watermarked.width, watermarked.height, text_width, text_height
                 )
                 
-                # Draw the watermark
+                # 绘制水印
                 draw.text(position, date_text, font=self.font, fill=self.font_color)
                 
-                # Ensure the output directory exists
+                # 确保输出目录存在
                 os.makedirs(os.path.dirname(output_path), exist_ok=True)
                 
-                # Save the watermarked image
+                # 保存水印图像
                 watermarked.save(output_path)
                 
-                print(f"Watermarked image saved to {output_path}")
+                print(f"水印图像已保存到 {output_path}")
                 return True
                 
         except Exception as e:
-            print(f"Error adding watermark: {e}")
+            print(f"添加水印时出错：{e}")
             return False
     
     def process_directory(self, input_dir):
         """
-        Process all images in a directory
+        处理目录中的所有图像
         
-        Args:
-            input_dir (str): Path to the directory containing images
+        参数:
+            input_dir (str): 包含图像的目录路径
             
-        Returns:
-            int: Number of successfully processed images
+        返回:
+            int: 成功处理的图像数量
         """
         if not os.path.isdir(input_dir):
-            print(f"Error: {input_dir} is not a directory")
+            print(f"错误：{input_dir}不是一个目录")
             return 0
         
-        # Create output directory
+        # 创建输出目录
         output_dir = os.path.join(input_dir, os.path.basename(input_dir) + "_watermark")
         os.makedirs(output_dir, exist_ok=True)
         
-        # Supported image extensions
+        # 支持的图像扩展名
         image_extensions = ('.jpg', '.jpeg', '.png', '.tiff', '.bmp')
         
-        # Process each image
+        # 处理每张图像
         success_count = 0
         for filename in os.listdir(input_dir):
             if filename.lower().endswith(image_extensions):
@@ -205,55 +205,55 @@ class PhotoWatermark:
 
 def parse_color(color_str):
     """
-    Parse color string to RGBA tuple
+    解析颜色字符串为RGBA元组
     
-    Args:
-        color_str (str): Color string in format "r,g,b,a" or "r,g,b"
+    参数:
+        color_str (str): "r,g,b,a"或"r,g,b"格式的颜色字符串
         
-    Returns:
-        tuple: RGBA color tuple
+    返回:
+        tuple: RGBA颜色元组
     """
     try:
         components = [int(c.strip()) for c in color_str.split(',')]
         if len(components) == 3:
-            # Add default alpha
+            # 添加默认透明度
             components.append(128)
         elif len(components) != 4:
-            raise ValueError("Color must have 3 or 4 components")
+            raise ValueError("颜色必须有3或4个组件")
         
-        # Validate ranges
+        # 验证范围
         for i, val in enumerate(components):
             if val < 0 or val > 255:
-                raise ValueError(f"Color component {i+1} out of range (0-255)")
+                raise ValueError(f"颜色组件{i+1}超出范围(0-255)")
         
         return tuple(components)
     except Exception as e:
-        raise argparse.ArgumentTypeError(f"Invalid color format: {e}")
+        raise argparse.ArgumentTypeError(f"无效的颜色格式：{e}")
 
 
 def main():
-    """Main function to parse arguments and run the watermark process"""
+    """解析参数并运行水印处理的主函数"""
     parser = argparse.ArgumentParser(
-        description="Add date watermark to photos based on EXIF information"
+        description="根据EXIF信息为照片添加日期水印"
     )
     
     parser.add_argument(
         "input_path",
-        help="Path to the image file or directory containing images"
+        help="图像文件或包含图像的目录的路径"
     )
     
     parser.add_argument(
         "--font-size", "-s",
         type=int,
         default=36,
-        help="Font size for the watermark (default: 36)"
+        help="水印的字体大小（默认：36）"
     )
     
     parser.add_argument(
         "--color", "-c",
         type=parse_color,
         default="255,255,255,128",
-        help="Watermark color in r,g,b,a format (0-255, default: 255,255,255,128)"
+        help="水印颜色，格式为r,g,b,a（0-255，默认：255,255,255,128）"
     )
     
     parser.add_argument(
@@ -264,40 +264,40 @@ def main():
             "left_bottom", "center_bottom", "right_bottom"
         ],
         default="right_bottom",
-        help="Position of the watermark on the image (default: right_bottom)"
+        help="水印在图像上的位置（默认：right_bottom）"
     )
     
     args = parser.parse_args()
     
-    # Create watermark processor
+    # 创建水印处理器
     watermark = PhotoWatermark(
         font_size=args.font_size,
         font_color=args.color,
         position=args.position
     )
     
-    # Process input path
+    # 处理输入路径
     if os.path.isdir(args.input_path):
-        # Process directory
+        # 处理目录
         count = watermark.process_directory(args.input_path)
-        print(f"Successfully processed {count} images")
+        print(f"成功处理了{count}张图像")
     elif os.path.isfile(args.input_path):
-        # Process single file
+        # 处理单个文件
         filename = os.path.basename(args.input_path)
         dir_path = os.path.dirname(args.input_path) or "."
         
-        # Create output directory
+        # 创建输出目录
         output_dir = os.path.join(dir_path, os.path.basename(dir_path) + "_watermark")
         os.makedirs(output_dir, exist_ok=True)
         
         output_path = os.path.join(output_dir, filename)
         
         if watermark.add_watermark(args.input_path, output_path):
-            print("Watermark added successfully")
+            print("水印添加成功")
         else:
-            print("Failed to add watermark")
+            print("添加水印失败")
     else:
-        print(f"Error: {args.input_path} does not exist")
+        print(f"错误：{args.input_path}不存在")
         return 1
     
     return 0

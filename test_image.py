@@ -10,7 +10,7 @@ import os
 import time
 
 # 创建一个简单的测试图片
-img = Image.new('RGB', (800, 600), color='#333333')
+img = Image.new('RGB', (1600, 1200), color='#333333')
 draw = ImageDraw.Draw(img)
 
 # 尝试使用系统字体添加一些文字
@@ -28,7 +28,7 @@ except IOError:
 
 # 注意：在较新版本的PIL中，添加EXIF信息的方式有所不同
 # 我们简化处理，先创建图片文件
-img.save('test_photo.jpg')
+img.save('./images/test_photo.jpg')
 
 # 获取当前日期
 current_date = time.strftime("%Y-%m-%d", time.localtime())
