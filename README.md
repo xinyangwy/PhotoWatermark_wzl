@@ -60,6 +60,8 @@ python photo_watermark.py path/to/directory
 ```bash
 python photo_watermark.py path/to/image.jpg --font-size 96 --color 255,0,0,200 --position center
 ```
+运行举例：
+![image](https://github.com/xinyangwy/PhotoWatermark_wzl/blob/main/readmePng.png)
 
 可用选项：
 
