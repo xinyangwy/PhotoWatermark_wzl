@@ -30,14 +30,21 @@ pip install -r requirements.txt
 
 ### 基本用法
 
+为单张图片添加水印：
 ```bash
-python photo_watermark.py [图片路径或目录路径]
+python photo_watermark.py path/to/image.jpg
+```
+
+为整个目录的图片添加水印：
+```bash
+python photo_watermark.py path/to/directory
 ```
 
 ### 高级选项
 
+自定义水印样式（红色半透明水印，字体大小48，居中显示）：
 ```bash
-python photo_watermark.py [图片路径或目录路径] [选项]
+python photo_watermark.py path/to/image.jpg --font-size 96 --color 255,0,0,200 --position center
 ```
 
 可用选项：
@@ -54,23 +61,6 @@ python photo_watermark.py [图片路径或目录路径] [选项]
   - `left_bottom`：左下角
   - `center_bottom`：底部居中
   - `right_bottom`：右下角（默认）
-
-### 示例
-
-为单张图片添加水印：
-```bash
-python photo_watermark.py path/to/image.jpg
-```
-
-为整个目录的图片添加水印：
-```bash
-python photo_watermark.py path/to/directory
-```
-
-自定义水印样式（红色半透明水印，字体大小48，居中显示）：
-```bash
-python photo_watermark.py path/to/image.jpg --font-size 96 --color 255,0,0,200 --position center
-```
 
 ## 输出
 
